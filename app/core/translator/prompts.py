@@ -1,26 +1,21 @@
-HIERARCHICAL_PROMPT_TEMPLATE = """You are an expert in Graph Query Language (GQL) and natural language understanding. Your task is to generate 4 levels of natural language descriptions for the given GQL query, following the framework from "Accessible Visualization via Natural Language Descriptions: A Four-Level Model of Semantic Content".
+HIERARCHICAL_PROMPT_TEMPLATE = """You are an expert in Graph Query Language (GQL) and natural language understanding. Your task is to generate 3 levels of natural language descriptions for the given GQL query, following the framework from "Accessible Visualization via Natural Language Descriptions: A Four-Level Model of Semantic Content".
 
-## 4-Level Framework Definition:
+## 3-Level Framework Definition:
 
-**Level 1: Structural/Syntactic Elements** (结构/语法元素)
-- Purpose: Basic query components and syntax (基础查询组件和语法)
+**Level 1: Structural/Syntactic Elements**
+- Purpose: Basic query components and syntax
 - Characteristics: Directly mentions node labels, relationship types, properties, and graph patterns
-- Example: "List 'Entity' that were incorporated on '23-MAR-2006'."
+- Example: "List 'Entity' nodes that were incorporated on the property value '23-MAR-2006'."
 
-**Level 2: Semantic/Logical Operations** (语义/逻辑操作)
-- Purpose: Query logic and computational meaning (查询逻辑和计算意义)
+**Level 2: Semantic/Logical Operations**
+- Purpose: Query logic and computational meaning
 - Characteristics: Describes what the query does without explicit graph terminology, focuses on the logical operation
-- Example: "List entities incorporated in March 23, 2006."
+- Example: "List entities incorporated on March 23, 2006."
 
-**Level 3: Analytical/Strategic Patterns** (分析/战略模式)
-- Purpose: Data analysis strategy and methodological insights (数据分析策略和方法论洞察)
+**Level 3: Analytical/Strategic Patterns**
+- Purpose: Data analysis strategy and methodological insights
 - Characteristics: Describes the analytical approach, patterns being investigated, or research methodology
-- Example: "Analyze company incorporation trends over 2026."
-
-**Level 4: Contextual/Domain-Specific Insights** (上下文/领域特定洞察)
-- Purpose: Business impact and strategic value (业务影响和战略价值)
-- Characteristics: Describes business goals, strategic decisions, or real-world applications
-- Example: "Identify high-growth periods in the tech industry."
+- Example: "Analyze company incorporation trends throughout the year 2026."
 
 ---
 
@@ -40,16 +35,15 @@ HIERARCHICAL_PROMPT_TEMPLATE = """You are an expert in Graph Query Language (GQL
 
 ## Task:
 
-Based on the GQL query above, generate 4 levels of natural language descriptions.
+Based on the GQL query above, generate 3 levels of natural language descriptions.
 
 **Important Guidelines:**
-1. Each level should be a complete, standalone natural language question or statement
-2. Level 1 should include explicit graph terminology (nodes, relationships, properties)
-3. Level 2 should be semantically clear without graph-specific terms
-4. Level 3 should focus on analytical methodology or data exploration strategy
-5. Level 4 should emphasize business value, strategic decision-making, or domain impact
-6. Ensure smooth progression from concrete (L1) to abstract (L4)
-7. Each level should be different from the others in abstraction and focus
+1. Each level should be a complete, standalone natural language question or statement.
+2. Level 1 should include explicit graph terminology (nodes, relationships, properties).
+3. Level 2 should be semantically clear without graph-specific terms.
+4. Level 3 should focus on analytical methodology or data exploration strategy.
+5. Ensure smooth progression from concrete (L1) to abstract (L3).
+6. Each level should be distinct from the others in abstraction and focus.
 
 **Output Format:**
 Please provide your response in the following JSON format:
@@ -59,7 +53,6 @@ Please provide your response in the following JSON format:
   "level_1": "Your Level 1 description here",
   "level_2": "Your Level 2 description here",
   "level_3": "Your Level 3 description here",
-  "level_4": "Your Level 4 description here",
   "explanation": "Brief explanation of the progression and key differences between levels"
 }}
 ```"""

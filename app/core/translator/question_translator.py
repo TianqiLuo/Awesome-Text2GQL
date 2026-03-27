@@ -359,7 +359,5 @@ class HierarchicalQuestionTranslator:
             "level_1": hierarchical_question["level_1"],
             "level_2": hierarchical_question["level_2"],
             "level_3": hierarchical_question["level_3"],
-            "level_4": hierarchical_question["level_4"],
             "external_knowledge": result.get("external_knowledge", ""),
-            "explanation": result.get("explanation", ""),
         }
