@@ -1,4 +1,5 @@
-from typing import List, Tuple
+import json
+from typing import List, Optional, Tuple
 
 from tqdm import tqdm
 
@@ -254,7 +255,9 @@ class HierarchicalQuestionTranslator:
             self.need_external_knowledge = False
             self.external_knowledge_prompt_template = None
 
-    def translate_hierachical_questions(self, query_list: List[str], data_schema_list: Optional[List[str]] = None) -> List[dict]:
+    def translate_hierachical_questions(
+        self, query_list: List[str], data_schema_list: Optional[List[str]] = None
+    ) -> List[dict]:
         '''
         Translate GQL into hierarchical natural language questions, and add external knowledge to the questions if needed.
         
@@ -280,12 +283,28 @@ class HierarchicalQuestionTranslator:
             }
         '''
 
+        if data_schema_list is None:
+            data_schema_list = [""] * len(query_list)
+        elif len(data_schema_list) != len(query_list):
+            raise ValueError("data_schema_list length must match query_list length")
+
         # 1. generate prompt list
-        prompt_list = [self.hierarchical_prompt_template.format(gql_query=query, data_schema=data_schema) for query, data_schema in zip(query_list, data_schema_list)]
+        prompt_list = [
+            self.hierarchical_prompt_template.format(
+                gql_query=query, data_schema=data_schema
+            )
+            for query, data_schema in zip(query_list, data_schema_list)
+        ]
         # 2. call LLM with prompt list
-        response_list = [self.llm_client.call_with_messages(prompt) for prompt in prompt_list]
+        response_list = [
+            self.llm_client.call_with_messages([{"role": "user", "content": prompt}])
+            for prompt in prompt_list
+        ]
         # 3. postprocess
-        hierarchical_question_list = [self.post_process_hierarchical_questions_response(response, query) for response, query in zip(response_list, query_list)]
+        hierarchical_question_list = [
+            self.post_process_hierarchical_questions_response(response, query)
+            for response, query in zip(response_list, query_list)
+        ]
 
         # 4. translate external knowledge
         if not self.need_external_knowledge:
@@ -310,20 +329,33 @@ class HierarchicalQuestionTranslator:
                 "external_knowledge": "The graph has 100 nodes."
             }
         '''
+        query_list = [item["gql_query"] for item in hierarchical_question_list]
+
         # 1. generate prompt list
         prompt_list = [
-            self.external_knowledge_prompt_template.format(gql_query=query, 
-                                                          level_2=hierarchical_question["level_2"], 
-                                                          level_3=hierarchical_question["level_3"]) 
+            self.external_knowledge_prompt_template.format(
+                gql_query=query,
+                level_2=hierarchical_question["level_2"],
+                level_3=hierarchical_question["level_3"],
+            )
             for query, hierarchical_question in zip(query_list, hierarchical_question_list)
         ]
-        for query, hierarchical_question in zip(query_list, hierarchical_question_list)]
 
         # 2. call LLM with prompt list
-        response_list = [self.llm_client.call_with_messages(prompt) for prompt in prompt_list]
-        
+        response_list = [
+            self.llm_client.call_with_messages([{"role": "user", "content": prompt}])
+            for prompt in prompt_list
+        ]
+
         # 3. postprocess
-        postprocessed_list = [self.post_process_external_knowledge_response(response, query, hierarchical_question) for response, query, hierarchical_question in zip(response_list, query_list, hierarchical_question_list)]
+        postprocessed_list = [
+            self.post_process_external_knowledge_response(
+                response, query, hierarchical_question
+            )
+            for response, query, hierarchical_question in zip(
+                response_list, query_list, hierarchical_question_list
+            )
+        ]
 
         return postprocessed_list
 
