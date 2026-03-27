@@ -263,6 +263,21 @@ class HierarchicalQuestionTranslator:
             data_schema_list: Optional[List[str]] = None
         Returns:
             List[dict]
+        Return example when need_external_knowledge=False:
+            {
+                "gql_query": "MATCH (n:Node) RETURN n",
+                "level_1": "List all nodes in the graph.",
+                "level_2": "List all nodes in the graph.",
+                "level_3": "List all nodes in the graph.",
+            }
+        Return example when need_external_knowledge=True:
+            {
+                "gql_query": "MATCH (n:Node) RETURN n",
+                "level_1": "List all nodes in the graph.",
+                "level_2": "List all nodes in the graph.",
+                "level_3": "List all nodes in the graph.",
+                "external_knowledge": "The graph has 100 nodes."
+            }
         '''
 
         # 1. generate prompt list
@@ -286,6 +301,14 @@ class HierarchicalQuestionTranslator:
             hierarchical_question_list: List[dict]
         Returns:
             List[dict]
+        Return example:
+            {
+                "gql_query": "MATCH (n:Node) RETURN n",
+                "level_1": "List all nodes in the graph.",
+                "level_2": "List all nodes in the graph.",
+                "level_3": "List all nodes in the graph.",
+                "external_knowledge": "The graph has 100 nodes."
+            }
         '''
         # 1. generate prompt list
         prompt_list = [
@@ -329,7 +352,6 @@ class HierarchicalQuestionTranslator:
             "level_1": result.get("level_1", ""),
             "level_2": result.get("level_2", ""),
             "level_3": result.get("level_3", ""),
-            "explanation": result.get("explanation", ""),
         }
     
     def post_process_external_knowledge_response(self, response: str, query: str, hierarchical_question: dict) -> dict:
